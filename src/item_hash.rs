@@ -7,6 +7,9 @@ use item_core::item_hash::ItemEventHash;
 use serde_dynamo::from_item;
 use std::collections::HashMap;
 
+/// Queries a [`source_id`](item_core::item_model::ItemModel::source_id) and returns all [event-hashes](ItemEventHash)
+/// sorted according to given flag
+/// [`scan_index_forward`](aws_sdk_dynamodb::operation::query::builders::QueryFluentBuilder::scan_index_forward).
 pub async fn get_item_event_hashes_by_source_id(
     source_id: &str,
     scan_index_forward: bool,
@@ -43,7 +46,10 @@ pub async fn get_item_event_hashes_by_source_id(
     Ok(item_event_hashes)
 }
 
-// vec is sorted by latest (first)
+/// Returns all [item_ids](ItemEventHash::get_item_id) and their events' [hashes](ItemEventHash::hash)
+/// for a [source](item_core::item_model::ItemModel::source_id) and sorts them by their [created-timestamp](ItemModel::created).
+///
+/// The first hash in the returned vec will be the latest.
 pub async fn get_item_event_hashes_map_by_source_id(
     source_id: &str,
     ddb_client: &dynamo_db::Client,
@@ -66,6 +72,8 @@ pub async fn get_item_event_hashes_map_by_source_id(
     Ok(item_id_hash_map)
 }
 
+/// Returns all [item_ids](ItemEventHash::get_item_id) and their latest events' [hash](ItemEventHash::hash)
+/// for a [source](item_core::item_model::ItemModel::source_id).
 pub async fn get_latest_item_event_hash_map_by_source_id(
     source_id: &str,
     ddb_client: &dynamo_db::Client,

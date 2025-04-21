@@ -6,6 +6,9 @@ use aws_sdk_dynamodb::types::AttributeValue;
 use item_core::item_model::ItemModel;
 use serde_dynamo::from_item;
 
+/// Returns the materialized view of an [`ItemModel`](item).
+///
+/// Fetches all events for given item first, then replays them in order.
 pub async fn get_materialized_item(
     item_id: &str,
     ddb_client: &dynamo_db::Client,
@@ -14,6 +17,9 @@ pub async fn get_materialized_item(
     Ok(ItemModel::try_from(&item_events[..]).ok())
 }
 
+/// Returns all events for an [`ItemModel`](item) and sorts them by their [created-timestamp](ItemModel::created).
+///
+/// The first item in the returned vec will be the latest.
 pub async fn get_item_events_by_item_id_sort_latest(
     item_id: &str,
     ddb_client: &dynamo_db::Client,
@@ -21,6 +27,9 @@ pub async fn get_item_events_by_item_id_sort_latest(
     get_item_events_by_item_id(item_id, false, ddb_client).await
 }
 
+/// Returns all events for an [`ItemModel`](item) and reversely sorts them by their [created-timestamp](ItemModel::created).
+///
+/// The first item in the returned vec will be the oldest.
 pub async fn get_item_events_by_item_id_sort_oldest(
     item_id: &str,
     ddb_client: &dynamo_db::Client,
@@ -28,6 +37,8 @@ pub async fn get_item_events_by_item_id_sort_oldest(
     get_item_events_by_item_id(item_id, true, ddb_client).await
 }
 
+/// Queries all events for an [`ItemModel`](item) and sorts according to given flag
+/// [`scan_index_forward`](aws_sdk_dynamodb::operation::query::builders::QueryFluentBuilder::scan_index_forward).
 pub async fn get_item_events_by_item_id(
     item_id: &str,
     scan_index_forward: bool,
