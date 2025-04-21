@@ -2398,7 +2398,7 @@ dependencies = [
 [[package]]
 name = "test-api"
 version = "0.1.0"
-source = "git+https://github.com/blitzfilter/test-api?branch=main#5a45d7aad5fd937642297de62c8476e673a89886"
+source = "git+https://github.com/blitzfilter/test-api?branch=main#5ed616894a342f68d99b62b4c9e58b0583dec648"
 dependencies = [
  "aws-config",
  "aws-sdk-dynamodb",
@@ -2414,7 +2414,7 @@ dependencies = [
 [[package]]
 name = "test-api-macros"
 version = "0.1.0"
-source = "git+https://github.com/blitzfilter/test-api?branch=main#5a45d7aad5fd937642297de62c8476e673a89886"
+source = "git+https://github.com/blitzfilter/test-api?branch=main#5ed616894a342f68d99b62b4c9e58b0583dec648"
 dependencies = [
  "quote",
  "syn",
