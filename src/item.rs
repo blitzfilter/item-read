@@ -18,19 +18,19 @@ pub async fn get_item_events_by_item_id_sort_latest(
     item_id: &str,
     ddb_client: &dynamo_db::Client,
 ) -> Result<Vec<ItemModel>, SdkError<QueryError, HttpResponse>> {
-    get_item_events_by_item_id(item_id, true, ddb_client).await
+    get_item_events_by_item_id(item_id, false, ddb_client).await
 }
 
 pub async fn get_item_events_by_item_id_sort_oldest(
     item_id: &str,
     ddb_client: &dynamo_db::Client,
 ) -> Result<Vec<ItemModel>, SdkError<QueryError, HttpResponse>> {
-    get_item_events_by_item_id(item_id, false, ddb_client).await
+    get_item_events_by_item_id(item_id, true, ddb_client).await
 }
 
 pub async fn get_item_events_by_item_id(
     item_id: &str,
-    sort_latest: bool,
+    scan_index_forward: bool,
     ddb_client: &dynamo_db::Client,
 ) -> Result<Vec<ItemModel>, SdkError<QueryError, HttpResponse>> {
     let item_events: Vec<ItemModel> = ddb_client
@@ -41,7 +41,7 @@ pub async fn get_item_events_by_item_id(
         .expression_attribute_names("#sk", "sk")
         .expression_attribute_values(":pk_val", AttributeValue::S(format!("item#{item_id}")))
         .expression_attribute_values(":sk_prefix", AttributeValue::S("item#".to_string()))
-        .scan_index_forward(!sort_latest)
+        .scan_index_forward(scan_index_forward)
         .into_paginator()
         .send()
         .try_collect()
