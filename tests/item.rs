@@ -1,12 +1,16 @@
 use item_core::item_model::ItemModel;
 use item_core::item_state::ItemState;
-use item_read::item::{get_item_events_by_item_id, get_item_events_by_item_id_sort_latest, get_item_events_by_item_id_sort_oldest, get_materialized_item};
-use test_api::dynamodb::get_client;
+use item_read::item::{
+    get_item_events_by_item_id, get_item_events_by_item_id_sort_latest,
+    get_item_events_by_item_id_sort_oldest, get_materialized_item,
+};
+use test_api::localstack::get_dynamodb_client;
 use test_api::test_api_macros::blitzfilter_dynamodb_test;
 
 #[blitzfilter_dynamodb_test]
 async fn should_materialize_item_1() {
-    let item_res = get_materialized_item("https://a1militaria.com#50109", get_client().await).await;
+    let item_res =
+        get_materialized_item("https://a1militaria.com#50109", get_dynamodb_client().await).await;
     assert!(item_res.is_ok());
     let item_opt = item_res.unwrap();
     assert!(item_opt.is_some());
@@ -34,7 +38,8 @@ async fn should_materialize_item_1() {
 
 #[blitzfilter_dynamodb_test]
 async fn should_materialize_item_2() {
-    let item_res = get_materialized_item("https://a1militaria.com#50388", get_client().await).await;
+    let item_res =
+        get_materialized_item("https://a1militaria.com#50388", get_dynamodb_client().await).await;
     assert!(item_res.is_ok());
     let item_opt = item_res.unwrap();
     assert!(item_opt.is_some());
@@ -62,9 +67,12 @@ async fn should_materialize_item_2() {
 
 #[blitzfilter_dynamodb_test]
 async fn should_return_all_item_events_for_given_id() {
-    let items_res =
-        get_item_events_by_item_id("https://a1militaria.com#50388", false, get_client().await)
-            .await;
+    let items_res = get_item_events_by_item_id(
+        "https://a1militaria.com#50388",
+        false,
+        get_dynamodb_client().await,
+    )
+    .await;
     assert!(items_res.is_ok());
     let items = items_res.unwrap();
 
@@ -73,25 +81,32 @@ async fn should_return_all_item_events_for_given_id() {
 
 #[blitzfilter_dynamodb_test]
 async fn should_return_all_item_events_for_given_id_sorted_by_latest() {
-    let items_res =
-        get_item_events_by_item_id_sort_latest("https://a1militaria.com#50388", get_client().await)
-            .await;
+    let items_res = get_item_events_by_item_id_sort_latest(
+        "https://a1militaria.com#50388",
+        get_dynamodb_client().await,
+    )
+    .await;
     assert!(items_res.is_ok());
     let items = items_res.unwrap();
 
     assert_eq!(items.len(), 5);
-    
+
     let latest_opt = items.get(0);
     assert!(latest_opt.is_some());
     let latest = latest_opt.unwrap();
-    assert_eq!(latest.clone().created.unwrap(), "2025-04-22T21:28:44.803674239Z");
+    assert_eq!(
+        latest.clone().created.unwrap(),
+        "2025-04-22T21:28:44.803674239Z"
+    );
 }
 
 #[blitzfilter_dynamodb_test]
 async fn should_return_all_item_events_for_given_id_sorted_by_oldest() {
-    let items_res =
-        get_item_events_by_item_id_sort_oldest("https://a1militaria.com#50388", get_client().await)
-            .await;
+    let items_res = get_item_events_by_item_id_sort_oldest(
+        "https://a1militaria.com#50388",
+        get_dynamodb_client().await,
+    )
+    .await;
     assert!(items_res.is_ok());
     let items = items_res.unwrap();
 
@@ -100,5 +115,8 @@ async fn should_return_all_item_events_for_given_id_sorted_by_oldest() {
     let latest_opt = items.get(0);
     assert!(latest_opt.is_some());
     let latest = latest_opt.unwrap();
-    assert_eq!(latest.clone().created.unwrap(), "2025-04-18T21:28:44.803674239Z");
+    assert_eq!(
+        latest.clone().created.unwrap(),
+        "2025-04-18T21:28:44.803674239Z"
+    );
 }

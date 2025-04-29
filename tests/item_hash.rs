@@ -2,14 +2,17 @@ use item_read::item_hash::{
     get_item_event_hashes_by_source_id, get_item_event_hashes_map_by_source_id,
     get_latest_item_event_hash_map_by_source_id,
 };
-use test_api::dynamodb::get_client;
+use test_api::localstack::get_dynamodb_client;
 use test_api::test_api_macros::blitzfilter_dynamodb_test;
 
 #[blitzfilter_dynamodb_test]
 async fn should_return_all_item_event_hashes_for_given_source_id() {
-    let item_events_res =
-        get_item_event_hashes_by_source_id("https://a1militaria.com", false, get_client().await)
-            .await;
+    let item_events_res = get_item_event_hashes_by_source_id(
+        "https://a1militaria.com",
+        false,
+        get_dynamodb_client().await,
+    )
+    .await;
     assert!(item_events_res.is_ok());
     let item_events = item_events_res.unwrap();
 
@@ -18,8 +21,11 @@ async fn should_return_all_item_event_hashes_for_given_source_id() {
 
 #[blitzfilter_dynamodb_test]
 async fn should_return_all_item_event_hashes_for_given_source_id_as_map() {
-    let item_events_res =
-        get_item_event_hashes_map_by_source_id("https://a1militaria.com", get_client().await).await;
+    let item_events_res = get_item_event_hashes_map_by_source_id(
+        "https://a1militaria.com",
+        get_dynamodb_client().await,
+    )
+    .await;
     assert!(item_events_res.is_ok());
     let item_events = item_events_res.unwrap();
 
@@ -28,8 +34,11 @@ async fn should_return_all_item_event_hashes_for_given_source_id_as_map() {
 
 #[blitzfilter_dynamodb_test]
 async fn should_return_all_item_event_hashes_for_given_source_id_as_map_sorted_by_latest() {
-    let hashes_res =
-        get_item_event_hashes_map_by_source_id("https://a1militaria.com", get_client().await).await;
+    let hashes_res = get_item_event_hashes_map_by_source_id(
+        "https://a1militaria.com",
+        get_dynamodb_client().await,
+    )
+    .await;
     assert!(hashes_res.is_ok());
     let hashes = hashes_res.unwrap();
 
@@ -47,9 +56,11 @@ async fn should_return_all_item_event_hashes_for_given_source_id_as_map_sorted_b
 
 #[blitzfilter_dynamodb_test]
 async fn should_return_latest_item_event_hash_for_given_source_id_as_map() {
-    let latest_hashes_res =
-        get_latest_item_event_hash_map_by_source_id("https://a1militaria.com", get_client().await)
-            .await;
+    let latest_hashes_res = get_latest_item_event_hash_map_by_source_id(
+        "https://a1militaria.com",
+        get_dynamodb_client().await,
+    )
+    .await;
     assert!(latest_hashes_res.is_ok());
     let latest_hashes = latest_hashes_res.unwrap();
 
