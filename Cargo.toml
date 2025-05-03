@@ -8,6 +8,7 @@ item-core = { git = "https://github.com/blitzfilter/item-core", branch = "main" 
 tokio = { version = "1", features = ["full"] }
 aws-sdk-dynamodb = { version = "1.72.1" }
 serde_dynamo = { version = "4.2.14", features = ["aws-sdk-dynamodb+1"] }
+tracing = "0.1.41"
 
 [dev-dependencies]
 test-api = { git = "https://github.com/blitzfilter/test-api", branch = "main" }

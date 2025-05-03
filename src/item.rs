@@ -5,6 +5,7 @@ use aws_sdk_dynamodb::operation::query::QueryError;
 use aws_sdk_dynamodb::types::AttributeValue;
 use item_core::item_model::ItemModel;
 use serde_dynamo::from_item;
+use tracing::warn;
 
 /// Returns the materialized view of an [`ItemModel`](item).
 ///
@@ -14,7 +15,13 @@ pub async fn get_materialized_item(
     ddb_client: &dynamo_db::Client,
 ) -> Result<Option<ItemModel>, SdkError<QueryError, HttpResponse>> {
     let item_events = get_item_events_by_item_id_sort_latest(item_id, ddb_client).await?;
-    Ok(ItemModel::try_from(&item_events[..]).ok())
+    match ItemModel::try_from(&item_events[..]) {
+        Ok(item_model) => Ok(Some(item_model)),
+        Err(e) => {
+            warn!("Failed to get materialized view for item with item_id '{item_id}' due to error: '{e}'");
+            Ok(None)
+        }
+    }
 }
 
 /// Returns all events for an [`ItemModel`](item) and sorts them by their [created-timestamp](ItemModel::created).
@@ -64,7 +71,7 @@ pub async fn get_item_events_by_item_id(
             match model {
                 Ok(m) => Some(m),
                 Err(e) => {
-                    eprintln!("Failed to parse item event: {}", e);
+                    warn!("Failed to deserialize item event due to error: {e}");
                     None
                 }
             }
