@@ -5,7 +5,7 @@ use aws_sdk_dynamodb::operation::query::QueryError;
 use aws_sdk_dynamodb::types::AttributeValue;
 use item_core::item_model::ItemModel;
 use serde_dynamo::from_item;
-use tracing::warn;
+use tracing::{error, warn};
 
 /// Returns the materialized view of an [`ItemModel`](item).
 ///
@@ -71,7 +71,7 @@ pub async fn get_item_events_by_item_id(
             match model {
                 Ok(m) => Some(m),
                 Err(e) => {
-                    warn!("Failed to deserialize item event due to error: {e}");
+                    error!("Failed to deserialize item event due to error: {e}");
                     None
                 }
             }

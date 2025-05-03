@@ -6,7 +6,7 @@ use aws_sdk_dynamodb::types::AttributeValue;
 use item_core::item_hash::ItemEventHash;
 use serde_dynamo::from_item;
 use std::collections::HashMap;
-use tracing::warn;
+use tracing::error;
 
 /// Queries a [`source_id`](item_core::item_model::ItemModel::source_id) and returns all [event-hashes](ItemEventHash)
 /// sorted according to given flag
@@ -37,7 +37,7 @@ pub async fn get_item_event_hashes_by_source_id(
             match model {
                 Ok(m) => Some(m),
                 Err(e) => {
-                    warn!("Failed to deserialize item event hash due to error: {e}");
+                    error!("Failed to deserialize item event hash due to error: {e}");
                     None
                 }
             }
